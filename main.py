@@ -8,7 +8,8 @@ from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
 import warnings, os
 import time
 from send_mail import send_mail
@@ -185,36 +186,53 @@ def sob_report_download(driver):
     merged_df['RECEIPT VALUE'] = merged_df['RECEIPT VALUE'].apply('{:,.2f}'.format)
     merged_df.to_excel(writer, index=False, sheet_name='SOB Report')
 
+
 def format_workbook(workbook_path):
     wb = openpyxl.load_workbook(workbook_path)
     header_font = Font(size=10, bold=True)
     header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
     header_fill = PatternFill(start_color='B6CFF2', end_color='B6CFF2', fill_type='solid')
-    print('formatting...')
+    cell_border = Border(left=Side(border_style='thin',color='000000'),
+                         right=Side(border_style='thin',color='000000'),
+                         top=Side(border_style='thin',color='000000'),
+                         bottom=Side(border_style='thin',color='000000'),)
     for sheet in wb:
         for column in sheet.columns:
             if column[0].value == 'Description':
                 for cell in column[1:]:
                     cell.alignment = Alignment(horizontal='left')
                     cell.font = Font(size=10)
+                    cell.border = cell_border
 
             elif column[0].value in ['RECEIPT QTY','RECEIPT VALUE']:
                 for cell in column[1:]:
                     cell.alignment = Alignment(horizontal='right')
                     cell.font = Font(size=10)
+                    cell.border = cell_border
             else:
                 for cell in column:
                     cell.alignment = Alignment(horizontal='center', vertical='center')
                     cell.font = Font(size = 10)
+                    cell.border = cell_border
     for sheet in wb:
         for column_cells in sheet.columns:
             length = max(len(str(cell.value)) for cell in column_cells)
-            sheet.column_dimensions[column_cells[0].column_letter].width = length
+            if column_cells[0].value == "Vendor":
+                vendor_col = column_cells[0].column_letter
+                sheet.column_dimensions[vendor_col].width = max(10, sheet.column_dimensions[vendor_col].width)
+            else:
+                sheet.column_dimensions[column_cells[0].column_letter].width = length
+        if sheet.max_column > 7:
+            for i in range(8, sheet.max_column + 1):
+                col_letter = get_column_letter(i)
+                sheet.column_dimensions[col_letter].width = 12
     for sheet in wb:
         for cell in sheet[1]:
             cell.font = header_font
             cell.alignment = header_alignment
             cell.fill = header_fill
+            cell.border = cell_border
+        sheet.freeze_panes = 'A2'
     wb.save(workbook_path)
     wb.close()
 
@@ -307,10 +325,9 @@ if __name__ == '__main__':
                 ]
     sob_download_path = os.path.join(project_dir, 'PM Vendor Sob Report New.csv')
     from_email = os.getenv('SMTP_EMAIL_ADDRESS')
-    # to = ['yoginderk@radico.co.in']
+    to = ['yoginderk@radico.co.in']
     # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in']
-    to = ['mastwalrk@radico.co.in']
-    cc = ['mohaksharma@outlook.in']
+    cc = ['mastwalrk@radico.co.in', 'mohaksharma@outlook.in', 'singhn@radico.co.in']
     password = os.getenv('SMTP_PASSWORD')
     subject = 'Vendor Rating Report (FEB 2023)'
     body = '''
@@ -332,7 +349,7 @@ if __name__ == '__main__':
       }
     </style>
     <body>
-        <h1>Vendor Rating Report (with SOB Report) - FEB 2023 </h1>
+        <h1>Testing of Vendor Rating Report (with SOB Report) - FEB 2023 </h1>
       <p> Please find the attached report with this mail. Also please note that <b>SOB Report</b> is the last sheet in attached workbook, so move accordingly.</p>
         <cite style='color:blue;'>(Do not reply to this as it is a automated message. Mail to mastwalrk@radico.co.in and mohaksharma@outlook.in for any further queries)</cite>
       <h3 style='font-style:italic;'>Thank You!</h3>

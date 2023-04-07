@@ -23,7 +23,7 @@ def send_mail(to:list[str], from_email:list[str], password:str, cc:list[str], su
             attach = MIMEApplication(f.read(), _subtype="xlsx")
             attach.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
             msg.attach(attach)
-        # os.remove(file_path)
+        os.remove(file_path)
 
     server = smtplib.SMTP('smtp-mail.outlook.com', 587)
     server.starttls()
