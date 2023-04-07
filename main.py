@@ -110,8 +110,10 @@ def vendor_report_download(driver):
         df.rename(columns=change_col, inplace=True)
         df = df.iloc[1:]
         numeric_cols = df.select_dtypes(include='number').columns
-        df[numeric_cols] = df[numeric_cols].round(2)
         df = df[df['External group'] != 'Not assigned']
+        for col in numeric_cols:
+            if '%' in col:
+                df[col] = df[col].map('{:.2f}'.format)
         df.to_excel(writer, sheet_name=story_type, index=False)
 
 
@@ -178,24 +180,37 @@ def sob_report_download(driver):
     for col in merged_df.columns:
         if '%' in col:
             merged_df[col] *= 100
-            merged_df[col] = merged_df[col].round()
+            merged_df[col] = merged_df[col].apply('{:.2f}'.format)
     merged_df['RECEIPT QTY'] = merged_df['RECEIPT QTY'].apply('{:,.2f}'.format)
     merged_df['RECEIPT VALUE'] = merged_df['RECEIPT VALUE'].apply('{:,.2f}'.format)
     merged_df.to_excel(writer, index=False, sheet_name='SOB Report')
 
-
 def format_workbook(workbook_path):
     wb = openpyxl.load_workbook(workbook_path)
-    header_font = Font(size=11, bold=True)
+    header_font = Font(size=10, bold=True)
     header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
-    header_fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
+    header_fill = PatternFill(start_color='B6CFF2', end_color='B6CFF2', fill_type='solid')
+    print('formatting...')
+    for sheet in wb:
+        for column in sheet.columns:
+            if column[0].value == 'Description':
+                for cell in column[1:]:
+                    cell.alignment = Alignment(horizontal='left')
+                    cell.font = Font(size=10)
+
+            elif column[0].value in ['RECEIPT QTY','RECEIPT VALUE']:
+                for cell in column[1:]:
+                    cell.alignment = Alignment(horizontal='right')
+                    cell.font = Font(size=10)
+            else:
+                for cell in column:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                    cell.font = Font(size = 10)
     for sheet in wb:
         for column_cells in sheet.columns:
             length = max(len(str(cell.value)) for cell in column_cells)
             sheet.column_dimensions[column_cells[0].column_letter].width = length
-        for column in sheet.columns:
-            for cell in column:
-                cell.alignment = Alignment(horizontal='center', vertical='center')
+    for sheet in wb:
         for cell in sheet[1]:
             cell.font = header_font
             cell.alignment = header_alignment
