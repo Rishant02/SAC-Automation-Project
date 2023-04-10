@@ -8,7 +8,7 @@ from email.mime.multipart import MIMEMultipart
 load_dotenv()
 
 
-def send_mail(to:list[str], from_email:list[str], password:str, cc:list[str], subject:str, body:str, file_path=None):
+def send_mail(to: list[str], from_email: list[str], password: str, cc: list[str], subject: str, body: str, file_path=None):
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = ', '.join(to)
