@@ -115,6 +115,8 @@ def vendor_report_download(driver):
         for col in numeric_cols:
             if '%' in col:
                 df[col] = df[col].map('{:.2f}'.format)
+        if story_type != 'summary':
+            df.drop(df.tail(1).index, inplace = True)
         df.to_excel(writer, sheet_name=story_type, index=False)
 
 
@@ -249,7 +251,7 @@ def run_main():
         user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_2_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
         Chrome_Options = webdriver.ChromeOptions()
         Chrome_Options.add_argument('headless')
-        Chrome_Options.add_argument("--window-size=1920,1080")
+        Chrome_Options.add_argument('--window-size=1920,1080')
         Chrome_Options.add_experimental_option('excludeSwitches', ['enable-logging'])
         Chrome_Options.add_experimental_option('excludeSwitches', ['enable-automation'])
         Chrome_Options.add_experimental_option('prefs', prefs)
@@ -325,9 +327,11 @@ if __name__ == '__main__':
                 ]
     sob_download_path = os.path.join(project_dir, 'PM Vendor Sob Report New.csv')
     from_email = os.getenv('SMTP_EMAIL_ADDRESS')
-    to = ['yoginderk@radico.co.in']
+    # to = ['yoginderk@radico.co.in']
+    to =  ['mohaksharma@outlook.in','mastwakrl@radico.co.in']
+    cc = []
     # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in']
-    cc = ['mastwalrk@radico.co.in', 'mohaksharma@outlook.in', 'singhn@radico.co.in']
+    # cc = ['mastwalrk@radico.co.in', 'mohaksharma@outlook.in', 'singhn@radico.co.in']
     password = os.getenv('SMTP_PASSWORD')
     subject = 'Vendor Rating Report (FEB 2023)'
     body = '''
@@ -349,7 +353,7 @@ if __name__ == '__main__':
       }
     </style>
     <body>
-        <h1>Testing of Vendor Rating Report (with SOB Report) - FEB 2023 </h1>
+        <h1>Vendor Rating Report (with SOB Report) - FEB 2023 </h1>
       <p> Please find the attached report with this mail. Also please note that <b>SOB Report</b> is the last sheet in attached workbook, so move accordingly.</p>
         <cite style='color:blue;'>(Do not reply to this as it is a automated message. Mail to mastwalrk@radico.co.in and mohaksharma@outlook.in for any further queries)</cite>
       <h3 style='font-style:italic;'>Thank You!</h3>
