@@ -326,7 +326,7 @@ if __name__ == '__main__':
                 'SHRINK SLEEVES'
                 ]
     sob_download_path = os.path.join(project_dir, 'PM Vendor Sob Report New.csv')
-    from_email = os.getenv('SMTP_EMAIL_ADDRESS')
+    from_email = os.getenv('SMTP_EMAIL_ADDRESS') 
     # to = ['yoginderk@radico.co.in']
     to =  ['mohaksharma@outlook.in','mastwakrl@radico.co.in']
     cc = []
