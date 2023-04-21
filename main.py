@@ -120,9 +120,10 @@ def vendor_report_download(driver):
     )
     all_option.click()
     time.sleep(1)
+    driver.save_screenshot('test.png')
     month_btn = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'span[title="MAR 2023 (02.2023)"] bdi')
+            (By.CSS_SELECTOR, 'span[title="MAR 2023 (03.2023)"] bdi')
         )
     )
     ActionChains(driver).move_to_element(month_btn).click().perform()
@@ -138,6 +139,8 @@ def vendor_report_download(driver):
     csv_path = os.path.join(project_dir, "_                   Vendor Rating Report.csv")
     for option in options:
         driver.find_element(By.CLASS_NAME, "sapMSltArrow").click()
+        if option.text.strip() == 'STICKER.':
+            continue
         print(f"Downloading {option.text}")
         story_type = option.text
         option.click()
@@ -358,8 +361,7 @@ def run_main():
             EC.invisibility_of_element_located((By.ID, "__indicator0-busy-area"))
         )
         print("Downloading Vendor Rating Report")
-        time.sleep(2)
-        driver.save_screenshot('test.png')
+
         vendor_report_download(driver)
         print("Successfully Downloaded Vendor Rating Report \n")
 
@@ -416,10 +418,8 @@ if __name__ == "__main__":
     ]
     sob_download_path = os.path.join(project_dir, "PM Vendor Sob Report New.csv")
     from_email = os.getenv("SMTP_EMAIL_ADDRESS")
-    to = ('mastwakrk@radico.co.in')
-    cc = ('mohaksharma@outlook.in')
-    # to = ['yoginderk@radico.co.in']
-    # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in', 'mastwalrk@radico.co.in']
+    to = ['yoginderk@radico.co.in']
+    cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in', 'mastwalrk@radico.co.in']
     password = os.getenv("SMTP_PASSWORD")
     subject = "Vendor Rating Report (MAR 2023)"
     body = """
