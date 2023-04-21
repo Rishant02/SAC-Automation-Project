@@ -122,7 +122,7 @@ def vendor_report_download(driver):
     time.sleep(1)
     month_btn = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'span[title="FEB 2023 (02.2023)"] bdi')
+            (By.CSS_SELECTOR, 'span[title="MAR 2023 (02.2023)"] bdi')
         )
     )
     ActionChains(driver).move_to_element(month_btn).click().perform()
@@ -191,8 +191,8 @@ def sob_report_download(driver):
     all_option.click()
     time.sleep(1)
     search_month = driver.find_element(By.XPATH, '//input[@type="search"]')
-    search_month.send_keys("FEB 2023")
-    month_btn = driver.find_element(By.XPATH, '//bdi[normalize-space()="FEB 2023"]')
+    search_month.send_keys("MAR 2023")
+    month_btn = driver.find_element(By.XPATH, '//bdi[normalize-space()="MAR 2023"]')
     month_btn.click()
     time.sleep(1)
     cal_year_month = driver.find_element(
@@ -358,6 +358,8 @@ def run_main():
             EC.invisibility_of_element_located((By.ID, "__indicator0-busy-area"))
         )
         print("Downloading Vendor Rating Report")
+        time.sleep(2)
+        driver.save_screenshot('test.png')
         vendor_report_download(driver)
         print("Successfully Downloaded Vendor Rating Report \n")
 
@@ -392,7 +394,7 @@ if __name__ == "__main__":
     project_dir = os.getcwd()
     download_path = os.path.join(project_dir, "static")
     max_attempts = 3
-    filename = "Vendor Rating Report (FEB 2023).xlsx"
+    filename = "Vendor Rating Report (MAR 2023).xlsx"
     writer = pd.ExcelWriter(filename)
     sob_dict = {}
     SOB_TYPE = [
@@ -414,13 +416,12 @@ if __name__ == "__main__":
     ]
     sob_download_path = os.path.join(project_dir, "PM Vendor Sob Report New.csv")
     from_email = os.getenv("SMTP_EMAIL_ADDRESS")
+    to = ('mastwakrk@radico.co.in')
+    cc = ('mohaksharma@outlook.in')
     # to = ['yoginderk@radico.co.in']
-    to = ["mohaksharma@outlook.in", "mastwakrl@radico.co.in"]
-    cc = []
-    # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in']
-    # cc = ['mastwalrk@radico.co.in', 'mohaksharma@outlook.in', 'singhn@radico.co.in']
+    # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in', 'mastwalrk@radico.co.in']
     password = os.getenv("SMTP_PASSWORD")
-    subject = "Vendor Rating Report (FEB 2023)"
+    subject = "Vendor Rating Report (MAR 2023)"
     body = """
     <!DOCTYPE html>
     <html lang="en">
@@ -440,7 +441,7 @@ if __name__ == "__main__":
       }
     </style>
     <body>
-        <h1>Vendor Rating Report (with SOB Report) - FEB 2023 </h1>
+        <h1>Vendor Rating Report (with SOB Report) - MAR 2023 </h1>
       <p> Please find the attached report with this mail. Also please note that <b>SOB Report</b> is the last sheet in attached workbook, so move accordingly.</p>
         <cite style='color:blue;'>(Do not reply to this as it is a automated message. Mail to mastwalrk@radico.co.in and mohaksharma@outlook.in for any further queries)</cite>
       <h3 style='font-style:italic;'>Thank You!</h3>
