@@ -120,7 +120,6 @@ def vendor_report_download(driver):
     )
     all_option.click()
     time.sleep(1)
-    driver.save_screenshot('test.png')
     month_btn = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable(
             (By.CSS_SELECTOR, 'span[title="MAR 2023 (03.2023)"] bdi')
