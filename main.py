@@ -18,6 +18,10 @@ load_dotenv()
 warnings.filterwarnings("ignore")
 
 
+def search_month(driver):
+    search_month = driver.find_element(By.XPATH, '//input[@type="search"]')
+    search_month.send_keys("MAR 2023")
+
 def website_login(driver):
     login_username = driver.find_element(By.ID, "j_username")
     login_username.send_keys(os.getenv("WEBSITE_USERNAME"))
@@ -120,6 +124,7 @@ def vendor_report_download(driver):
     )
     all_option.click()
     time.sleep(1)
+    search_month(driver)
     month_btn = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable(
             (By.CSS_SELECTOR, 'span[title="MAR 2023 (03.2023)"] bdi')
@@ -192,8 +197,7 @@ def sob_report_download(driver):
     )
     all_option.click()
     time.sleep(1)
-    search_month = driver.find_element(By.XPATH, '//input[@type="search"]')
-    search_month.send_keys("MAR 2023")
+    search_month(driver)
     month_btn = driver.find_element(By.XPATH, '//bdi[normalize-space()="MAR 2023"]')
     month_btn.click()
     time.sleep(1)
@@ -442,7 +446,7 @@ if __name__ == "__main__":
     <body>
         <h1>Vendor Rating Report (with SOB Report) - MAR 2023 </h1>
       <p> Please find the attached report with this mail. Also please note that <b>SOB Report</b> is the last sheet in attached workbook, so move accordingly.</p>
-        <cite style='color:blue;'>(Do not reply to this as it is a automated message. Mail to mastwalrk@radico.co.in and mohaksharma@outlook.in for any further queries)</cite>
+        <cite style='color:blue;'>(Do not reply to this as it is a automated message. Mail to mastwalrk@radico.co.in for any further queries)</cite>
       <h3 style='font-style:italic;'>Thank You!</h3>
     </body>
     </html>
