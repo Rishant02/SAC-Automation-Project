@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from dotenv import load_dotenv
 import pandas as pd
 import openpyxl
-from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side, numbers
 from openpyxl.utils import get_column_letter
 import warnings, os
 import time
@@ -250,13 +250,7 @@ def sob_report_download(driver):
     change_col = {merged_df.columns[i]: actual_cols[i] for i in range(len(actual_cols))}
     merged_df.rename(columns=change_col, inplace=True)
     merged_df = merged_df.iloc[1:]
-    numeric_cols = merged_df.select_dtypes(include="number").columns
-    merged_df[numeric_cols] = merged_df[numeric_cols].round(2)
     merged_df = merged_df[merged_df["Description"] != "Not assigned"]
-    for col in merged_df.columns:
-        if "%" in col:
-            merged_df[col] *= 100
-            merged_df[col] = merged_df[col].apply("{:.2f}".format)
     merged_df["RECEIPT QTY"] = merged_df["RECEIPT QTY"].apply("{:,.2f}".format)
     merged_df["RECEIPT VALUE"] = merged_df["RECEIPT VALUE"].apply("{:,.2f}".format)
     merged_df.to_excel(writer, index=False, sheet_name="SOB Report")
@@ -288,6 +282,12 @@ def format_workbook(workbook_path):
                     cell.alignment = Alignment(horizontal="right")
                     cell.font = Font(size=10)
                     cell.border = cell_border
+            elif column[0].value in ["SHARE %- QTY", "SHARE %- VALUE"]:
+                for cell in column[1:]:
+                    cell.alignment = Alignment(horizontal="center")
+                    cell.font = Font(size=10)
+                    cell.border = cell_border
+                    cell.number_format = numbers.FORMAT_PERCENTAGE_00
             else:
                 for cell in column:
                     cell.alignment = Alignment(horizontal="center", vertical="center")
