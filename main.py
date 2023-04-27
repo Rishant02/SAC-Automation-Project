@@ -251,6 +251,7 @@ def sob_report_download(driver):
     merged_df.rename(columns=change_col, inplace=True)
     merged_df = merged_df.iloc[1:]
     merged_df = merged_df[merged_df["Description"] != "Not assigned"]
+    merged_df.drop_duplicates(inplace=True)
     merged_df["RECEIPT QTY"] = merged_df["RECEIPT QTY"].apply("{:,.2f}".format)
     merged_df["RECEIPT VALUE"] = merged_df["RECEIPT VALUE"].apply("{:,.2f}".format)
     merged_df.to_excel(writer, index=False, sheet_name="SOB Report")
@@ -421,8 +422,9 @@ if __name__ == "__main__":
     ]
     sob_download_path = os.path.join(project_dir, "PM Vendor Sob Report New.csv")
     from_email = os.getenv("SMTP_EMAIL_ADDRESS")
-    to = ['yoginderk@radico.co.in']
-    cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in', 'mastwalrk@radico.co.in']
+    to = ['mastwalrk@radico.co.in']
+    cc = ['mohaksharma@outlook.in',]
+    # cc = ['singhn@radico.co.in', 'bhattkc@radico.co.in', 'agarwalvk@radico.co.in', 'mastwalrk@radico.co.in']
     password = os.getenv("SMTP_PASSWORD")
     subject = "Vendor Rating Report (MAR 2023)"
     body = """
